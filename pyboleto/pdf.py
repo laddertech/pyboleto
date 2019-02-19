@@ -68,23 +68,27 @@ class BoletoPDF(object):
         self.pdf_canvas.saveState()
         self.pdf_canvas.translate(x, y)
 
-        linha_inicial = 12
+        linha_inicial = 10
 
         # Horizontal Lines
         self.pdf_canvas.setLineWidth(2)
         self.__horizontalLine(0, 0, self.width_canhoto)
 
         self.pdf_canvas.setLineWidth(1)
+        self.__horizontalLine(0, (1 * self.height_line), self.width_canhoto)
         self.__horizontalLine(0,
                               (linha_inicial + 0) * self.height_line,
                               self.width_canhoto)
         self.__horizontalLine(0,
                               (linha_inicial + 1) * self.height_line,
                               self.width_canhoto)
+        self.__horizontalLine(0,
+                              (linha_inicial + 2) * self.height_line,
+                              self.width_canhoto)
 
         self.pdf_canvas.setLineWidth(2)
         self.__horizontalLine(0,
-                              (linha_inicial + 2) * self.height_line,
+                              (linha_inicial + 4) * self.height_line,
                               self.width_canhoto)
 
         # Vertical Lines
@@ -97,9 +101,10 @@ class BoletoPDF(object):
                             self.height_line)
 
         self.pdf_canvas.setFont('Helvetica-Bold', 6)
-        self.pdf_canvas.drawRightString(self.width_canhoto,
-                                        0 * self.height_line + 3,
-                                        'Recibo do Pagador')
+        # self.pdf_canvas.drawRightString(self.width_canhoto,
+        #                                 0 * self.height_line + 3,
+        #                                 'Recibo do Pagador')
+        self.pdf_canvas.drawString(self.space, 1 * self.height_line + 3, 'Pagador')
 
         # Titles
         self.pdf_canvas.setFont('Helvetica', 6)
@@ -124,6 +129,18 @@ class BoletoPDF(object):
             self.width_canhoto - (35 * mm) + self.space,
             (((linha_inicial + 1) * self.height_line)) + self.delta_title,
             'Valor Documento'
+        )
+        self.pdf_canvas.drawString(
+            self.space,
+            (((linha_inicial + 3) * self.height_line)) + self.delta_title,
+            'Beneficiário'
+        )
+
+        self.pdf_canvas.setFont('Helvetica-Bold', 10)
+        self.pdf_canvas.drawString(
+            self.space,
+            (((linha_inicial + 3.5) * self.height_line)) + self.delta_title,
+            'RECIBO DO PAGADOR'
         )
 
         # Values
@@ -154,6 +171,21 @@ class BoletoPDF(object):
             (((linha_inicial + 1) * self.height_line)) + self.space,
             valor_documento
         )
+        self.pdf_canvas.drawString(
+            self.space,
+            (((linha_inicial + 2) * self.height_line)) + self.space + (2 * mm),
+            '{}: {}'.format('CNPJ' if len(boleto_dados.cedente_documento) > 14 else 'CPF',
+                            boleto_dados.cedente_documento)
+        )
+        self.pdf_canvas.drawString(
+            self.space,
+            (((linha_inicial + 3) * self.height_line)) + self.space,
+            boleto_dados.cedente[:34]
+        )
+        self.pdf_canvas.drawString(
+            self.space, (4 + self.space),
+            boleto_dados.sacado_nome[:34]
+        )
 
         demonstrativo = boleto_dados.demonstrativo[0:12]
         for index, value in enumerate(demonstrativo):
@@ -166,7 +198,7 @@ class BoletoPDF(object):
         self.pdf_canvas.restoreState()
 
         return (self.width_canhoto,
-                ((linha_inicial + 2) * self.height_line))
+                ((linha_inicial + 5) * self.height_line))
 
     def _drawReciboSacado(self, boleto_dados, x, y):
         """Imprime o Recibo do Sacado para modelo de página inteira
@@ -687,8 +719,10 @@ class BoletoPDF(object):
         )
 
         self.pdf_canvas.setFont('Helvetica', self.font_size_value)
-        beneficiario = u'{} - CPF/CNPJ: {}'.format(
-            boleto_dados.cedente, boleto_dados.cedente_documento)
+        beneficiario = u'{} - {}: {}'.format(
+            boleto_dados.cedente,
+            'CNPJ' if len(boleto_dados.cedente_documento) > 14 else 'CPF',
+            boleto_dados.cedente_documento)
         self.pdf_canvas.drawString(0, y + self.space + 10, beneficiario)
         self.pdf_canvas.drawString(0, y + self.space,
                                    boleto_dados.cedente_endereco)
