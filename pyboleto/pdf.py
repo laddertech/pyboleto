@@ -36,22 +36,18 @@ class BoletoPDF(object):
     """
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, file_descr, landscape=False):
-        self.width = 190 * mm
-        self.width_canhoto = 70 * mm
-        self.height_line = 6.5 * mm
+    def __init__(self, file_descr, carne=False):
+        self.width = 155 * mm if carne else 190 * mm
+        self.width_canhoto = 40 * mm
+        self.height_line = 5.5 * mm if carne else 6.5 * mm
         self.space = 2
-        self.font_size_title = 6
-        self.font_size_value = 9
+        self.font_size_title = 5 if carne else 6
+        self.font_size_value = 6 if carne else 9
         self.delta_title = self.height_line - (self.font_size_title + 1)
         self.delta_font = self.font_size_value + 1
 
-        if landscape:
-            pagesize = pagesize_landscape(A4)
-        else:
-            pagesize = A4
-
-        self.pdf_canvas = canvas.Canvas(file_descr, pagesize=pagesize)
+        self.carne = carne
+        self.pdf_canvas = canvas.Canvas(file_descr, pagesize=A4)
         self.pdf_canvas.setStrokeColor(black)
 
     def _draw_recibo_sacado_canhoto(self, boleto_dados, x, y):
@@ -88,22 +84,19 @@ class BoletoPDF(object):
 
         self.pdf_canvas.setLineWidth(2)
         self.__horizontalLine(0,
-                              (linha_inicial + 4) * self.height_line,
+                              (linha_inicial + 4.1) * self.height_line,
                               self.width_canhoto)
 
         # Vertical Lines
         self.pdf_canvas.setLineWidth(1)
-        self.__verticalLine(self.width_canhoto - (35 * mm),
+        self.__verticalLine(self.width_canhoto - (18 * mm),
                             (linha_inicial + 0) * self.height_line,
                             self.height_line)
-        self.__verticalLine(self.width_canhoto - (35 * mm),
+        self.__verticalLine(self.width_canhoto - (18 * mm),
                             (linha_inicial + 1) * self.height_line,
                             self.height_line)
 
         self.pdf_canvas.setFont('Helvetica-Bold', 6)
-        # self.pdf_canvas.drawRightString(self.width_canhoto,
-        #                                 0 * self.height_line + 3,
-        #                                 'Recibo do Pagador')
         self.pdf_canvas.drawString(self.space, 1 * self.height_line + 3, 'Pagador')
 
         # Titles
@@ -116,17 +109,17 @@ class BoletoPDF(object):
             'Nosso Número'
         )
         self.pdf_canvas.drawString(
-            self.width_canhoto - (35 * mm) + self.space,
+            self.width_canhoto - (18 * mm) + self.space,
             (((linha_inicial + 0) * self.height_line)) + self.delta_title,
             'Vencimento'
         )
         self.pdf_canvas.drawString(
             self.space,
             (((linha_inicial + 1) * self.height_line)) + self.delta_title,
-            'Agência/Código Beneficiário'
+            'Agência/Beneficiário'
         )
         self.pdf_canvas.drawString(
-            self.width_canhoto - (35 * mm) + self.space,
+            self.width_canhoto - (18 * mm) + self.space,
             (((linha_inicial + 1) * self.height_line)) + self.delta_title,
             'Valor Documento'
         )
@@ -139,12 +132,12 @@ class BoletoPDF(object):
         self.pdf_canvas.setFont('Helvetica-Bold', 10)
         self.pdf_canvas.drawString(
             self.space,
-            (((linha_inicial + 3.5) * self.height_line)) + self.delta_title,
+            (((linha_inicial + 3.7) * self.height_line)) + self.delta_title,
             'RECIBO DO PAGADOR'
         )
 
         # Values
-        self.pdf_canvas.setFont('Helvetica', 9)
+        self.pdf_canvas.setFont('Helvetica', 6)
         heigh_font = 9 + 1
 
         valor_documento = self._formataValorParaExibir(
@@ -157,7 +150,7 @@ class BoletoPDF(object):
             boleto_dados.format_nosso_numero()
         )
         self.pdf_canvas.drawString(
-            self.width_canhoto - (35 * mm) + self.space,
+            self.width_canhoto - (18 * mm) + self.space,
             (((linha_inicial + 0) * self.height_line)) + self.space,
             boleto_dados.data_vencimento.strftime('%d/%m/%Y')
         )
@@ -167,7 +160,7 @@ class BoletoPDF(object):
             boleto_dados.agencia_conta_cedente
         )
         self.pdf_canvas.drawString(
-            self.width_canhoto - (35 * mm) + self.space,
+            self.width_canhoto - (18 * mm) + self.space,
             (((linha_inicial + 1) * self.height_line)) + self.space,
             valor_documento
         )
@@ -466,6 +459,8 @@ class BoletoPDF(object):
 
         self.pdf_canvas.translate(x, y)
 
+        right_space = 25 if self.carne else 45
+
         # De baixo para cima posicao 0,0 esta no canto inferior esquerdo
         self.pdf_canvas.setFont('Helvetica', self.font_size_title)
 
@@ -505,42 +500,42 @@ class BoletoPDF(object):
 
         # Linha vertical limitando todos os campos da direita
         self.pdf_canvas.setLineWidth(1)
-        self.__verticalLine(self.width - (45 * mm), y, 9.5 * self.height_line)
+        self.__verticalLine(self.width - (right_space * mm), y, 9.5 * self.height_line)
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title,
             '(=) Valor cobrado'
         )
 
         # Campos da direita
         y += self.height_line
-        self.__horizontalLine(self.width - (45 * mm), y, 45 * mm)
+        self.__horizontalLine(self.width - (right_space * mm), y, right_space * mm)
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title,
             '(+) Outros acréscimos'
         )
 
         y += self.height_line
-        self.__horizontalLine(self.width - (45 * mm), y, 45 * mm)
+        self.__horizontalLine(self.width - (right_space * mm), y, right_space * mm)
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title,
             '(+) Mora/Multa'
         )
 
         y += self.height_line
-        self.__horizontalLine(self.width - (45 * mm), y, 45 * mm)
+        self.__horizontalLine(self.width - (right_space * mm), y, right_space * mm)
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title,
             '(-) Outras deduções'
         )
 
         y += self.height_line
-        self.__horizontalLine(self.width - (45 * mm), y, 45 * mm)
+        self.__horizontalLine(self.width - (right_space * mm), y, right_space * mm)
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title,
             '(-) Descontos/Abatimentos'
         )
@@ -596,7 +591,7 @@ class BoletoPDF(object):
             ((30 + 40 + 40) * mm) + self.space, y + self.delta_title, 'Valor')
 
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title,
             '(=) Valor documento'
         )
@@ -669,7 +664,7 @@ class BoletoPDF(object):
             'Data processamento'
         )
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title,
             'Nosso número'
         )
@@ -713,7 +708,7 @@ class BoletoPDF(object):
         self.pdf_canvas.drawString(0, y + self.delta_title + 10,
                                    'Beneficiário')
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title + 10,
             boleto_dados.label_cedente
         )
@@ -742,7 +737,7 @@ class BoletoPDF(object):
             'Local de pagamento'
         )
         self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
+            self.width - (right_space * mm) + self.space,
             y + self.delta_title,
             'Vencimento'
         )
@@ -761,12 +756,12 @@ class BoletoPDF(object):
         self.pdf_canvas.setFont('Helvetica', self.font_size_title)
 
         # Linha grossa com primeiro campo logo tipo do banco
-        self.pdf_canvas.setLineWidth(3)
+        self.pdf_canvas.setLineWidth(2)
         y += self.height_line
         self.__horizontalLine(0, y, self.width)
         self.pdf_canvas.setLineWidth(2)
-        self.__verticalLine(40 * mm, y, self.height_line)  # Logo Tipo
-        self.__verticalLine(60 * mm, y, self.height_line)  # Numero do Banco
+        self.__verticalLine(25.5 * mm if self.carne else 40 * mm, y, self.height_line)  # Logo Tipo
+        self.__verticalLine(39 * mm if self.carne else 60 * mm, y, self.height_line)  # Numero do Banco
 
         if boleto_dados.logo_image:
             logo_image_path = load_image(boleto_dados.logo_image)
@@ -781,7 +776,7 @@ class BoletoPDF(object):
             )
         self.pdf_canvas.setFont('Helvetica-Bold', 18)
         self.pdf_canvas.drawCentredString(
-            50 * mm,
+            32 * mm if self.carne else 50 * mm,
             y + 2 * self.space,
             boleto_dados.codigo_dv_banco
         )
@@ -799,40 +794,45 @@ class BoletoPDF(object):
 
         return self.width, (y + self.height_line)
 
-    def drawBoletoCarneDuplo(self, boletoDados1, boletoDados2=None):
-        """Imprime um boleto tipo carnê com 2 boletos por página.
+    def drawBoletoCarne(self, boletoDados1, boletoDados2=None, boletoDados3=None):
+        """Imprime um boleto tipo carnê com 3 boletos por página.
 
         :param boletoDados1: Objeto com os dados do boleto a ser preenchido.
             Deve ser subclasse de :class:`pyboleto.data.BoletoData`
         :param boletoDados2: Objeto com os dados do boleto a ser preenchido.
             Deve ser subclasse de :class:`pyboleto.data.BoletoData`
+        :param boletoDados3: Objeto com os dados do boleto a ser preenchido.
+            Deve ser subclasse de :class:`pyboleto.data.BoletoData`
         :type boletoDados1: :class:`pyboleto.data.BoletoData`
         :type boletoDados2: :class:`pyboleto.data.BoletoData`
+        :type boletoDados3: :class:`pyboleto.data.BoletoData`
 
         """
-        y = 2 * mm
-        d = self.drawBoletoCarne(boletoDados1, y)
+        y = 10 * mm
+        d = self._drawBoletoCarne(boletoDados1, y)
         y += d[1] + 3 * mm
         if boletoDados2:
             self._drawHorizontalCorteLine(0, y, d[0])
             y += 4 * mm
-            self.drawBoletoCarne(boletoDados2, y)
+            d = self._drawBoletoCarne(boletoDados2, y)
+            y += d[1] + 3 * mm
+        if boletoDados3:
+            self._drawHorizontalCorteLine(0, y, d[0])
+            y += 4 * mm
+            self._drawBoletoCarne(boletoDados3, y)
 
-    def drawBoletoCarne(self, boleto_dados, y):
+    def _drawBoletoCarne(self, boleto_dados, y):
         """Imprime apenas dos boletos do carnê.
-
-        Esta função não deve ser chamada diretamente, ao invés disso use a
-        drawBoletoCarneDuplo.
 
         :param boleto_dados: Objeto com os dados do boleto a ser preenchido.
             Deve ser subclasse de :class:`pyboleto.data.BoletoData`
         :type boleto_dados: :class:`pyboleto.data.BoletoData`
         """
-        x = 15 * mm
+        x = 5 * mm if self.carne else 15 * mm
         d = self._draw_recibo_sacado_canhoto(boleto_dados, x, y)
-        x += d[0] + 8 * mm
+        x += d[0] + 1 * mm
         self._drawVerticalCorteLine(x, y, d[1])
-        x += 8 * mm
+        x += 1 * mm
         d = self._drawReciboCaixa(boleto_dados, x, y)
         x += d[0]
         return x, d[1]
