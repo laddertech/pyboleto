@@ -774,7 +774,7 @@ class BoletoPDF(object):
                 preserveAspectRatio=True,
                 anchor='sw'
             )
-        self.pdf_canvas.setFont('Helvetica-Bold', 18)
+        self.pdf_canvas.setFont('Helvetica-Bold', 12)
         self.pdf_canvas.drawCentredString(
             32 * mm if self.carne else 50 * mm,
             y + 2 * self.space,
