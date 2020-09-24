@@ -398,8 +398,9 @@ class BoletoData(object):
         """
         if self._sacado is None:
             self.sacado = [
-                '%s - CPF/CNPJ: %s' % (self.sacado_nome,
-                                       self.sacado_documento),
+                '%s - %s: %s' % (self.sacado_nome,
+                                 'CNPJ' if len(self.sacado_documento) > 14 else 'CPF',
+                                 self.sacado_documento),
                 self.sacado_endereco,
                 '%s - %s - %s - %s' % (
                     self.sacado_bairro,

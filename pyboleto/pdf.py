@@ -525,7 +525,7 @@ class BoletoPDF(object):
         for i in range(len(sacado)):
             self.pdf_canvas.drawString(
                 15 * mm,
-                (y - 10) - (i * self.delta_font),
+                (y - 8) - (i * self.delta_font),
                 sacado[i]
             )
         self.pdf_canvas.setFont('Helvetica', self.font_size_title)
