@@ -36,7 +36,7 @@ class BoletoPDF(object):
     """
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, file_descr, carne=False):
+    def __init__(self, file_descr, carne=False, title='Boleto'):
         self.width = 155 * mm if carne else 190 * mm
         self.width_canhoto = 40 * mm
         self.height_line = 5.5 * mm if carne else 6.5 * mm
@@ -49,6 +49,7 @@ class BoletoPDF(object):
         self.carne = carne
         self.pdf_canvas = canvas.Canvas(file_descr, pagesize=A4)
         self.pdf_canvas.setStrokeColor(black)
+        self.pdf_canvas.setTitle(title)
 
     def _draw_recibo_sacado_canhoto(self, boleto_dados, x, y):
         """Imprime o Recibo do Sacado para modelo de carnê
@@ -166,18 +167,49 @@ class BoletoPDF(object):
         )
         self.pdf_canvas.drawString(
             self.space,
-            (((linha_inicial + 2) * self.height_line)) + self.space + (2 * mm),
+            (((linha_inicial + 2) * self.height_line)) + self.space,
             '{}: {}'.format('CNPJ' if len(boleto_dados.cedente_documento) > 14 else 'CPF',
                             boleto_dados.cedente_documento)
         )
+
+        cedente_nome_split = boleto_dados.cedente.split(' ')
+        cedente_nome1 = ''
+        cedente_nome2 = ''
+        while len(cedente_nome_split) > 0:
+            nome = cedente_nome_split.pop(0)
+            sw1 = self.pdf_canvas.stringWidth(cedente_nome1 + nome)
+            sw2 = self.pdf_canvas.stringWidth(cedente_nome2 + nome)
+            if sw1 < self.width_canhoto and cedente_nome2 == '':
+                cedente_nome1 += ' ' + nome
+            elif sw2 < self.width_canhoto:
+                cedente_nome2 += ' ' + nome
+            else:
+                cedente_nome2 += '...'
+                break
+
+        cedente_nome1 = cedente_nome1.strip()
+        cedente_nome2 = cedente_nome2.strip()
+
         self.pdf_canvas.drawString(
             self.space,
             (((linha_inicial + 3) * self.height_line)) + self.space,
-            boleto_dados.cedente[:34]
+            cedente_nome1
         )
         self.pdf_canvas.drawString(
-            self.space, (4 + self.space),
+            self.space,
+            (((linha_inicial + 2.5) * self.height_line)) + self.space,
+            cedente_nome2
+        )
+
+        self.pdf_canvas.drawString(
+            self.space, (7.5 + self.space),
             boleto_dados.sacado_nome[:34]
+        )
+
+        self.pdf_canvas.drawString(
+            self.space, (0.5 + self.space),
+            '{}: {}'.format('CNPJ' if len(boleto_dados.sacado_documento) > 14 else 'CPF',
+                            boleto_dados.sacado_documento)
         )
 
         demonstrativo = boleto_dados.demonstrativo[0:12]
@@ -808,18 +840,25 @@ class BoletoPDF(object):
         :type boletoDados3: :class:`pyboleto.data.BoletoData`
 
         """
+        x = 5 * mm
         y = 10 * mm
         d = self._drawBoletoCarne(boletoDados1, y)
         y += d[1] + 3 * mm
+
+        # Linha inferior
+        self._drawHorizontalCorteLine(x, 6 * mm, d[0] - x)
+
         if boletoDados2:
-            self._drawHorizontalCorteLine(0, y, d[0])
+            self._drawHorizontalCorteLine(x, y, d[0] - x)
             y += 4 * mm
             d = self._drawBoletoCarne(boletoDados2, y)
             y += d[1] + 3 * mm
         if boletoDados3:
-            self._drawHorizontalCorteLine(0, y, d[0])
+            self._drawHorizontalCorteLine(x, y, d[0] - x)
             y += 4 * mm
-            self._drawBoletoCarne(boletoDados3, y)
+            d = self._drawBoletoCarne(boletoDados3, y)
+            y += d[1] + 3 * mm
+            self._drawHorizontalCorteLine(x, y, d[0] - x)
 
     def _drawBoletoCarne(self, boleto_dados, y):
         """Imprime apenas dos boletos do carnê.
