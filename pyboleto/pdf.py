@@ -820,7 +820,7 @@ class BoletoPDF(object):
         )
 
         # Codigo de barras
-        self._codigoBarraI25(boleto_dados.barcode, 2 * self.space, 0)
+        self._codigoBarraI25(boleto_dados.barcode, 7 * self.space, 0)
 
         self.pdf_canvas.restoreState()
 
