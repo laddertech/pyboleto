@@ -848,16 +848,23 @@ class BoletoPDF(object):
         # Linha inferior
         self._drawHorizontalCorteLine(x, 6 * mm, d[0] - x)
 
+        # Linha Superior
+        self._drawHorizontalCorteLine(x, y, d[0] - x)
+
         if boletoDados2:
-            self._drawHorizontalCorteLine(x, y, d[0] - x)
             y += 4 * mm
             d = self._drawBoletoCarne(boletoDados2, y)
             y += d[1] + 3 * mm
-        if boletoDados3:
+
+            # Linha Superior
             self._drawHorizontalCorteLine(x, y, d[0] - x)
+
+        if boletoDados3:
             y += 4 * mm
             d = self._drawBoletoCarne(boletoDados3, y)
             y += d[1] + 3 * mm
+
+            # Linha Superior
             self._drawHorizontalCorteLine(x, y, d[0] - x)
 
     def _drawBoletoCarne(self, boleto_dados, y):
@@ -887,10 +894,10 @@ class BoletoPDF(object):
         :type boleto_dados: :class:`pyboleto.data.BoletoData`
         """
         x = 9 * mm  # margem esquerda
-        y = 10 * mm  # margem inferior
+        y = 14 * mm  # margem inferior
 
-        self._drawHorizontalCorteLine(x, y, self.width)
-        y += 4 * mm  # distancia entre linha de corte e barcode
+        # self._drawHorizontalCorteLine(x, y, self.width)
+        # y += 4 * mm  # distancia entre linha de corte e barcode
 
         d = self._drawReciboCaixa(boleto_dados, x, y)
         y += d[1] + (12 * mm)  # distancia entre Recibo caixa e linha de corte
