@@ -14,6 +14,8 @@ import sys
 import datetime
 from decimal import Decimal
 
+from .utils import doc_label
+
 if sys.version_info[0] > 2:
     basestring = str
 
@@ -399,7 +401,7 @@ class BoletoData(object):
         if self._sacado is None:
             self.sacado = [
                 '%s - %s: %s' % (self.sacado_nome,
-                                 'CNPJ' if len(self.sacado_documento) > 14 else 'CPF',
+                                 doc_label(self.sacado_documento),
                                  self.sacado_documento),
                 self.sacado_endereco,
                 '%s - %s - %s - %s' % (

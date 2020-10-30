@@ -18,6 +18,7 @@ from reportlab.lib.units import mm, cm
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 
+from .utils import doc_label
 
 class BoletoPDF(object):
     """Geração do Boleto em PDF
@@ -168,7 +169,7 @@ class BoletoPDF(object):
         self.pdf_canvas.drawString(
             self.space,
             (((linha_inicial + 2) * self.height_line)) + self.space,
-            '{}: {}'.format('CNPJ' if len(boleto_dados.cedente_documento) > 14 else 'CPF',
+            '{}: {}'.format(doc_label(boleto_dados.cedente_documento),
                             boleto_dados.cedente_documento)
         )
 
@@ -208,7 +209,7 @@ class BoletoPDF(object):
 
         self.pdf_canvas.drawString(
             self.space, (0.5 + self.space),
-            '{}: {}'.format('CNPJ' if len(boleto_dados.sacado_documento) > 14 else 'CPF',
+            '{}: {}'.format(doc_label(boleto_dados.sacado_documento),
                             boleto_dados.sacado_documento)
         )
 
@@ -748,7 +749,7 @@ class BoletoPDF(object):
         self.pdf_canvas.setFont('Helvetica', self.font_size_value)
         beneficiario = u'{} - {}: {}'.format(
             boleto_dados.cedente,
-            'CNPJ' if len(boleto_dados.cedente_documento) > 14 else 'CPF',
+            doc_label(boleto_dados.cedente_documento),
             boleto_dados.cedente_documento)
         self.pdf_canvas.drawString(0, y + self.space + 10, beneficiario)
         self.pdf_canvas.drawString(0, y + self.space,
