@@ -508,11 +508,16 @@ class BoletoPDF(object):
         y += self.height_line
         self.pdf_canvas.setLineWidth(2)
         self.__horizontalLine(0, y, self.width)
-        self.pdf_canvas.drawString(
-            self.width - (45 * mm) + self.space,
-            y + self.space, 'Código de baixa'
-        )
-        self.pdf_canvas.drawString(0, y + self.space, 'Sacador / Avalista')
+        # self.pdf_canvas.drawString(
+        #     self.width - (45 * mm) + self.space,
+        #     y + self.space, 'Código de baixa'
+        # )
+
+        self.pdf_canvas.drawString(0, y + self.space, 'Sacador / Avalista:')
+        if boleto_dados.sacador_nome:
+            sacador = boleto_dados.sacador_nome
+            sacador += f' - {boleto_dados.sacador_documento}' if boleto_dados.sacador_documento is not None else ''
+            self.pdf_canvas.drawString(16 * mm,  y + self.space, sacador)
 
         y += self.height_line
         self.pdf_canvas.drawString(0, y + self.delta_title, 'Pagador')
@@ -525,7 +530,7 @@ class BoletoPDF(object):
         self.pdf_canvas.setFont('Helvetica', self.font_size_value)
         for i in range(len(sacado)):
             self.pdf_canvas.drawString(
-                15 * mm,
+                16 * mm,
                 (y - 8) - (i * self.delta_font),
                 sacado[i]
             )
