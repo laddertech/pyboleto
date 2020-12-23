@@ -1,27 +1,13 @@
 ========
-python-boleto - Fork mantido por Trustcode
+pyboleto - Fork mantido por Ladder Tecnologia
 ========
 
-.. image:: https://travis-ci.org/Trust-Code/python-boleto.svg?branch=master
-    :target: https://travis-ci.org/Trust-Code/python-boleto
-
-.. image:: https://coveralls.io/repos/github/Trust-Code/python-boleto/badge.svg?branch=master
-    :target: https://coveralls.io/github/Trust-Code/python-boleto?branch=master
-
-.. image:: https://landscape.io/github/Trust-Code/python-boleto/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/Trust-Code/python-boleto/master
-   :alt: Code Health
-
-.. image:: https://badge.fury.io/py/python-boleto.svg
-  :target: https://badge.fury.io/py/python-boleto
-
-
-.. _pyboleto-synopsis:
-
-python-boleto é um projeto python para gerar boletos de cobrança.
+pyboleto é um projeto python para gerar boletos de cobrança.
 
 O projeto original pode ser encontrado aqui:
 https://github.com/eduardocereto/pyboleto
+e a origem deste fork aqui:
+https://github.com/Trust-Code/python-boleto
 
 
 .. contents::
@@ -46,6 +32,8 @@ For now here's where we are.
  | **Banrisul**         | x              | Yes             | Yes        |
  +----------------------+----------------+-----------------+------------+
  | **Bradesco**         | 06, 03         | Yes             | Yes        |
+ +----------------------+----------------+-----------------+------------+
+ | **Cresol**           | 09, 4950705    | Yes             | Yes        |
  +----------------------+----------------+-----------------+------------+
  | **Caixa Economica**  | SR             | Yes             | No         |
  +----------------------+----------------+-----------------+------------+
@@ -76,12 +64,11 @@ Documentation
 Installation
 ============
 
-You can install pyboleto either via the Python Package Index (PyPI)
-or from source.
+You can install pyboleto from source.
 
 To install using pip,::
 
-    $ pip install python-boleto
+    $ pip install -e git://github.com/fabiothz/pyboleto.git#egg=pyboleto
 
 
 .. _pyboleto-installing-from-source:
@@ -90,12 +77,12 @@ Downloading and installing from source
 --------------------------------------
 
 Download the latest version of pyboleto from
-http://pypi.python.org/pypi/python-boleto/
+http://github.com/fabiothz/pyboleto/
 
 You can install it by doing the following,::
 
-    $ tar xvfz python-boleto-0.0.0.tar.gz
-    $ cd python-boleto-0.0.0
+    $ tar xvfz pyboleto-0.0.0.tar.gz
+    $ cd pyboleto-0.0.0
     $ python setup.py build
     # python setup.py install # as root
 
@@ -106,7 +93,7 @@ Using the development version
 
 You can clone the repository by doing the following::
 
-    $ git clone https://github.com/Trust-Code/python-boleto.git
+    $ git clone https://github.com/fabiothz/pyboleto.git
 
 .. _pyboleto-unittests:
 
