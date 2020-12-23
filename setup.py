@@ -20,11 +20,11 @@ def get_version(package):
                      ).group(1)
 
 setup(
-    name='python boleto',
+    name='pyboleto',
     version=get_version('pyboleto'),
     author='Trust-Code',
     author_email='suporte@trustcode.com.br',
-    url='https://github.com/Trust-Code/python-boleto',
+    url='https://github.com/fabiothz/pyboleto.git',
     packages=find_packages(),
     package_data={
         '': ['LICENSE'],
