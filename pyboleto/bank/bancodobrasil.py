@@ -30,6 +30,7 @@ class BoletoBB(BoletoData):
 
     agencia_cedente = CustomProperty('agencia_cedente', 4)
     conta_cedente = CustomProperty('conta_cedente', 8)
+    carteira = CustomProperty('carteira', 2)
 
     def __init__(self, format_convenio, format_nnumero):
         '''
@@ -43,7 +44,7 @@ class BoletoBB(BoletoData):
         super(BoletoBB, self).__init__()
 
         self.codigo_banco = "001"
-        self.carteira = 18
+        # self.carteira = 18
         self.logo_image = "logo_bb.jpg"
 
         # Size of convenio 4, 6, 7 or 8
