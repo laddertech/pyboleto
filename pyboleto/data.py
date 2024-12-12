@@ -25,6 +25,7 @@ class BoletoException(Exception):
 
 
 _EPOCH = datetime.date(1997, 10, 7)
+_NEW_EPOCH = datetime.date(2025, 2, 22)
 
 
 class CustomProperty(object):
@@ -219,7 +220,18 @@ class BoletoData(object):
                      value,
                      len(value)))
 
+        # Época anterior
         due_date_days = (self.data_vencimento - _EPOCH).days
+        
+        """
+        Em 22/02/2025 o Fator de Vencimento deverá retornar automaticamente para o fator 1000. 
+        A data de 22/02/2025 deverá ser adotada como nova DATA BASE para o cálculo.
+        fator de vencimento = (data de vencimento) - (22/02/2025) + 1000
+        """        
+        # Nova Época
+        if due_date_days > 9999:
+            due_date_days = 1000 + (self.data_vencimento - _NEW_EPOCH).days
+        
         if not (9999 >= due_date_days >= 0):
             raise TypeError(
                 "Invalid date, must be between 1997/07/01 and "
